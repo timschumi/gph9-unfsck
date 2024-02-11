@@ -60,6 +60,9 @@ for i in range(cluster_count):
     elif maybe_magic[4:11] == b"ftypmp4":
         print(f"[+] Found MP4 file starting at sector {i}")
         dump_name = f"{i}.mp4"
+    elif maybe_magic[0:3] == b"\xFF\xD8\xFF":
+        print(f"[+] Found JPEG file starting at sector {i}")
+        dump_name = f"{i}.jpeg"
     else:
         continue
 
