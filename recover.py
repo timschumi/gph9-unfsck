@@ -55,10 +55,10 @@ for i in range(cluster_count):
 
     maybe_magic = pread(file, 16, cluster_offset_real + i * bpc)
     if maybe_magic[0:4] == b"RIFF":
-        print(f"[+] Found WAV file starting at sector {i}")
+        print(f"[+] Found WAV file starting at cluster {i}")
         dump_name = f"{i}.wav"
     elif maybe_magic[4:11] == b"ftypmp4":
-        print(f"[+] Found MP4 file starting at sector {i}")
+        print(f"[+] Found MP4 file starting at cluster {i}")
         dump_name = f"{i}.mp4"
     else:
         continue
@@ -75,7 +75,7 @@ for i in range(cluster_count):
     if next_entry in processed_entries:
         print(f"[!] File terminated with a loop at entry {next_entry}")
     elif next_entry == 0xFFFFFFF7:
-        print(f"[!] File terminated with a bad sector")
+        print(f"[!] File terminated with a bad cluster")
     elif next_entry != 0xFFFFFFFF:
         print(f"[!] File terminated with out of bounds entry number {next_entry}")
 
