@@ -48,7 +48,11 @@ print(f"[*] BytesPerSector is {bps}")
 print(f"[*] SectorsPerCluster is {spc}")
 print(f"[*] BytesPerCluster is {bpc}")
 
+processed_entries = []
 for i in range(cluster_count):
+    if i + 2 in processed_entries:
+        continue
+
     maybe_magic = pread(file, 16, cluster_offset_real + i * bpc)
     if maybe_magic[0:4] == b"RIFF":
         print(f"[+] Found WAV file starting at sector {i}")
@@ -61,15 +65,14 @@ for i in range(cluster_count):
 
     dump_file = open(dump_name, "wb")
 
-    entry_chain = []
     next_entry = i + 2
-    while next_entry >= 2 and next_entry <= cluster_count + 1 and next_entry not in entry_chain:
+    while next_entry >= 2 and next_entry <= cluster_count + 1 and next_entry not in processed_entries:
         data = pread(file, bpc, cluster_offset_real + (next_entry - 2) * bpc)
         dump_file.write(data)
-        entry_chain.append(next_entry)
+        processed_entries.append(next_entry)
         next_entry = struct.unpack("<I", pread(file, 4, fat_offset_real + next_entry * 4))[0]
 
-    if next_entry in entry_chain:
+    if next_entry in processed_entries:
         print(f"[!] File terminated with a loop at entry {next_entry}")
     elif next_entry == 0xFFFFFFF7:
         print(f"[!] File terminated with a bad sector")
