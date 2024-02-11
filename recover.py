@@ -48,7 +48,7 @@ print(f"[*] BytesPerSector is {bps}")
 print(f"[*] SectorsPerCluster is {spc}")
 print(f"[*] BytesPerCluster is {bpc}")
 
-processed_entries = []
+processed_entries = set()
 for i in range(cluster_count):
     if i + 2 in processed_entries:
         continue
@@ -69,7 +69,7 @@ for i in range(cluster_count):
     while next_entry >= 2 and next_entry <= cluster_count + 1 and next_entry not in processed_entries:
         data = pread(file, bpc, cluster_offset_real + (next_entry - 2) * bpc)
         dump_file.write(data)
-        processed_entries.append(next_entry)
+        processed_entries.add(next_entry)
         next_entry = struct.unpack("<I", pread(file, 4, fat_offset_real + next_entry * 4))[0]
 
     if next_entry in processed_entries:
